@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:notes_app/authentication/screen/signin_screen.dart';
 import 'package:notes_app/notes/screen/note_edit_screen.dart';
 import 'package:notes_app/notes/screen/note_reader_screen.dart';
 import 'package:notes_app/utilities/appconfigs.dart';
 import 'package:notes_app/utilities/widget/note_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,12 +15,63 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           'Notes',
           style: TextStyle(),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.person))
+          IconButton(
+              onPressed: () async {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return BottomSheet(
+                      onClosing: () {},
+                      builder: (context) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Logout',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text('Are you sure logout?'),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    final pref = await SharedPreferences.getInstance();
+                                    pref.setBool(AppConfig.loggedStateKey, false);
+                                    pref.setString(AppConfig.userIDPrefKey, '');
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
+                                  },
+                                  style: ButtonStyle(
+                                      backgroundColor:
+                                          MaterialStatePropertyAll(Colors.red)),
+                                  child: Text('Logout',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold))),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              icon: Icon(Icons.person))
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
