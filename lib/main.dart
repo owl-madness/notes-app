@@ -1,20 +1,26 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/authentication/controller/auth_provider.dart';
-import 'package:notes_app/authentication/screen/signin_screen.dart';
-import 'package:notes_app/notes/screen/home_screen.dart';
-import 'package:notes_app/splash_screen.dart';
+import 'package:notes_app/notes/controller/notes_provider.dart';
+import 'package:notes_app/authentication/screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
-  runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(
-      create: (context) => AuthProvider(),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => NotesProvider(),
+        ),
+      ],
+      child: const MyApp(),
     ),
-  ], child: const MyApp()));
+  );
 }
 
 class MyApp extends StatelessWidget {

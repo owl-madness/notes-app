@@ -1,138 +1,82 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:notes_app/authentication/screen/signin_screen.dart';
+import 'package:notes_app/notes/controller/notes_provider.dart';
 import 'package:notes_app/notes/screen/note_edit_screen.dart';
 import 'package:notes_app/notes/screen/note_reader_screen.dart';
-import 'package:notes_app/utilities/appconfigs.dart';
 import 'package:notes_app/utilities/widget/note_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          'Notes',
-          style: TextStyle(),
+    return Consumer<NotesProvider>(
+      builder: (context, notesProvider, child) => Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text(
+            'Notes',
+            style: TextStyle(),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () => notesProvider.onProfileTap(context),
+              icon: const Icon(Icons.person),
+            )
+          ],
         ),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return BottomSheet(
-                      onClosing: () {},
-                      builder: (context) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'Logout',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Text('Are you sure logout?'),
-                              SizedBox(
-                                height: 10,
-                              ),
-                              ElevatedButton(
-                                  onPressed: () async {
-                                    final pref = await SharedPreferences.getInstance();
-                                    pref.setBool(AppConfig.loggedStateKey, false);
-                                    pref.setString(AppConfig.userIDPrefKey, '');
-                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInScreen()));
-                                  },
-                                  style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStatePropertyAll(Colors.red)),
-                                  child: Text('Logout',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold))),
-                              SizedBox(
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                );
-              },
-              icon: Icon(Icons.person))
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NoteEditorScreen(),
-              )),
-          label: Text('Add note')),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: Text(
-              'Recent Notes',
-              style: TextStyle(fontSize: 15),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () =>
+              notesProvider.navigateScreen(context, const NoteEditorScreen()),
+          label: const Text('Add note'),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 15.0),
+              child: Text(
+                'Recent Notes',
+                style: TextStyle(fontSize: 15),
+              ),
             ),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          Expanded(
-            child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection("notes")
-                  .where('user_id', isEqualTo: AppConfig.userID)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: SizedBox(
+            const SizedBox(
+              height: 10.0,
+            ),
+            Expanded(
+              child: StreamBuilder(
+                stream: notesProvider.noteStream,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: SizedBox(
                         height: 50,
                         width: 50,
-                        child: CircularProgressIndicator()),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    return GridView(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2),
+                        children: snapshot.data!.docs
+                            .map((note) => noteCard(
+                                () => notesProvider.navigateScreen(
+                                    context, NoteReaderScreen(doc: note)),
+                                note))
+                            .toList());
+                  }
+                  return const Center(
+                    child: Text('There\'s no notes'),
                   );
-                }
-                if (snapshot.hasData) {
-                  print(snapshot.data);
-                  return GridView(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2),
-                      children: snapshot.data!.docs
-                          .map((note) => noteCard(
-                              () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        NoteReaderScreen(doc: note),
-                                  )),
-                              note))
-                          .toList());
-                }
-                return Center(
-                  child: Text('There\'s no notes'),
-                );
-              },
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

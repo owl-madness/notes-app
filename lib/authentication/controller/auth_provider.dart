@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:notes_app/authentication/authentication_helper.dart';
+import 'package:notes_app/authentication/screen/signin_screen.dart';
 import 'package:notes_app/notes/screen/home_screen.dart';
 import 'package:notes_app/utilities/appconfigs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -109,7 +110,17 @@ class AuthProvider extends ChangeNotifier {
     } else {
       print('step6');
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Enter Credentials')));
+          .showSnackBar(const SnackBar(content: Text('Enter Credentials')));
+    }
+  }
+
+  void checkLoggedState(BuildContext context) async {
+    final pref = await  SharedPreferences.getInstance();
+    bool? loggedstate = pref.getBool(AppConfig.loggedStateKey);
+    if(loggedstate ?? false){
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen(),));
+    } else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen(),));
     }
   }
 }
