@@ -13,7 +13,37 @@ class _NoteReaderScreenState extends State<NoteReaderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () async {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Delete'),
+                    content: Text('Are you sure delete?'),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          await FirebaseFirestore.instance.runTransaction(
+                              (Transaction myTransaction) async {
+                            myTransaction.delete(widget.doc.reference);
+                          }).whenComplete(() => Navigator.pop(context));
+                          Navigator.pop(context);
+                        },
+                        child: Text('Delete'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text('Cancel'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: Icon(Icons.delete))
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
