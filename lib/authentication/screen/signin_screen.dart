@@ -15,37 +15,37 @@ class SignInScreen extends StatelessWidget {
           builder: (context, value, child) => Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Sign in',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               TextFormField(
                 controller: value.usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     prefix: Icon(Icons.email),
                     label: Text('Email')),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               TextFormField(
                 controller: value.passwordController,
                 obscureText: value.isHidden,
                 decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    prefix: Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    prefix: const Icon(Icons.lock),
                     suffix: GestureDetector(
                         onTap: () => value.changeVisibility(),
                         child: Icon(value.isHidden
                             ? Icons.visibility_off
                             : Icons.visibility)),
-                    label: Text('Password')),
+                    label: const Text('Password')),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               ElevatedButton(
@@ -53,15 +53,15 @@ class SignInScreen extends StatelessWidget {
                       value.usernameController.text.trim(),
                       value.passwordController.text.trim(),
                       context),
-                  child: Text('Login')),
-              SizedBox(height: 20),
+                  child: const Text('Login')),
+              const SizedBox(height: 20),
               TextButton(
                   onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => SignupScreen(),
+                        builder: (context) => const SignupScreen(),
                       )),
-                  child: Text('Create account'))
+                  child: const Text('Create account'))
             ],
           ),
         ),

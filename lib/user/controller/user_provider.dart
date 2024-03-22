@@ -96,10 +96,7 @@ class UserProvider extends ChangeNotifier {
                           final pref = await SharedPreferences.getInstance();
                           pref.setBool(AppConfig.loggedStateKey, false);
                           pref.setString(AppConfig.userIDPrefKey, '');
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignInScreen()));
+                          Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const SignInScreen(),), (route) => false);
                         },
                         style: const ButtonStyle(
                           backgroundColor: MaterialStatePropertyAll(Colors.red),

@@ -73,12 +73,12 @@ class AuthProvider extends ChangeNotifier {
             for (var value in user.docs) {
               if (value["note_user_id"].toLowerCase().trim() ==
                   email.toLowerCase().trim()) {
-                age = int.tryParse(value["note_user_age"]);
+                age = value["note_user_age"];
                 name = value["note_user_name"];
               }
             }
             AppConfig.userData = UserData(name: name, age: age, email: email);
-
+            passwordController.clear();
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
@@ -90,6 +90,8 @@ class AuthProvider extends ChangeNotifier {
           }
         });
       } catch (e) {
+        ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(e.toString())));
         print(e);
       }
     } else {
@@ -137,7 +139,7 @@ class AuthProvider extends ChangeNotifier {
       for (var value in user.docs) {
         if (value["note_user_id"].toLowerCase().trim() ==
             email?.toLowerCase().trim()) {
-          age = int.tryParse(value["note_user_age"]);
+          age = value["note_user_age"];
           name = value["note_user_name"];
         }
       }
