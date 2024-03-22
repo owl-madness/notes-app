@@ -39,7 +39,7 @@ class NotesProvider extends ChangeNotifier {
       String dateTime) async {
     FirebaseFirestore.instance.collection("notes").add({
       "creation_date": dateTime,
-      "user_id": AppConfig.userData,
+      "user_id": AppConfig.userData?.email,
       "note_title": noteTitle,
       "note_content": noteContent
     }).then((value) {

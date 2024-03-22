@@ -65,12 +65,36 @@ class ProfileScreen extends StatelessWidget {
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
                             hintText: 'Name',
+                            label: Text('Name'),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(14),
                               ),
                             ),
-                          ),onChanged: (value) => userProvider.nameString = value,
+                          ),
+                          onChanged: (value) => userProvider.nameString = value,
+                        ),
+                        const SizedBox(
+                          height: 18.0,
+                        ),
+                        TextFormField(
+                          initialValue:
+                              (userDoc?["note_user_age"] ?? '').toString(),
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: const InputDecoration(
+                            label: Text('Age'),
+                            hintText: 'Age',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(14),
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) => userProvider.ageString = value,
                         ),
                         const SizedBox(
                           height: 18.0,
@@ -79,30 +103,13 @@ class ProfileScreen extends StatelessWidget {
                           initialValue: AppConfig.userData?.email,
                           textAlign: TextAlign.center,
                           decoration: const InputDecoration(
-                            hintText: 'email',
+                            label: Text('Email'),
+                            hintText: 'Email',
                             border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(14))),
                             enabled: false,
                           ),
-                        ),
-                        const SizedBox(
-                          height: 18.0,
-                        ),
-                        TextFormField(
-                          initialValue: (userDoc?["note_user_age"] ?? '').toString(),
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                          decoration: const InputDecoration(
-                            hintText: 'Age',
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(14),),),
-                          ),
-                          onChanged: (value) => userProvider.ageString = value,
                         ),
                         const SizedBox(
                           height: 25.0,
