@@ -1,8 +1,9 @@
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/authentication/authentication_helper.dart';
 import 'package:notes_app/authentication/screen/signin_screen.dart';
 import 'package:notes_app/notes/screen/home_screen.dart';
+import 'package:notes_app/user/model/user_model.dart';
 import 'package:notes_app/utilities/appconfigs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -63,14 +64,27 @@ class AuthProvider extends ChangeNotifier {
             final pref = await SharedPreferences.getInstance();
             pref.setString(AppConfig.userIDPrefKey, email);
             pref.setBool(AppConfig.loggedStateKey, true);
-            AppConfig.userID = email;
+
+            int? age;
+            String? name;
+            var user = await FirebaseFirestore.instance
+                .collection("note_user_details")
+                .get();
+            for (var value in user.docs) {
+              if (value["note_user_id"].toLowerCase().trim() ==
+                  email.toLowerCase().trim()) {
+                age = int.tryParse(value["note_user_age"]);
+                name = value["note_user_name"];
+              }
+            }
+            AppConfig.userData = UserData(name: name, age: age, email: email);
+
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
+                  builder: (context) => const HomeScreen(),
                 ));
           } else {
-            print('login result ${result}');
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text(result.toString())));
           }
@@ -80,12 +94,11 @@ class AuthProvider extends ChangeNotifier {
       }
     } else {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Enter Credentials')));
+          .showSnackBar(const SnackBar(content: Text('Enter Credentials')));
     }
   }
 
   void signupUser(String email, String password, BuildContext context) {
-    print('$email : $password');
     if (email.isNotEmpty && password.isNotEmpty) {
       try {
         AuthenticationHelper()
@@ -98,29 +111,47 @@ class AuthProvider extends ChangeNotifier {
             passwordController.clear();
             cfpasswordController.clear();
             Navigator.pop(context);
-            print('sign in');
           } else {
-            print('sign result ${result.runtimeType}');
+            debugPrint('sign result $result');
           }
         });
       } catch (e) {
-        print('step5');
         print(e);
       }
     } else {
-      print('step6');
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('Enter Credentials')));
     }
   }
 
   void checkLoggedState(BuildContext context) async {
-    final pref = await  SharedPreferences.getInstance();
+    final pref = await SharedPreferences.getInstance();
     bool? loggedstate = pref.getBool(AppConfig.loggedStateKey);
-    if(loggedstate ?? false){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen(),));
+    if (loggedstate ?? false) {
+      var email = pref.getString(AppConfig.userIDPrefKey);
+      int? age;
+      String? name;
+      var user = await FirebaseFirestore.instance
+          .collection("note_user_details")
+          .get();
+      for (var value in user.docs) {
+        if (value["note_user_id"].toLowerCase().trim() ==
+            email?.toLowerCase().trim()) {
+          age = int.tryParse(value["note_user_age"]);
+          name = value["note_user_name"];
+        }
+      }
+      AppConfig.userData = UserData(name: name, age: age, email: email);
+
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          (route) => false);
     } else {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const SignInScreen(),));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
+          (route) => false);
     }
   }
 }

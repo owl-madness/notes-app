@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:notes_app/authentication/controller/auth_provider.dart';
 import 'package:notes_app/notes/controller/notes_provider.dart';
 import 'package:notes_app/authentication/screen/splash_screen.dart';
+import 'package:notes_app/user/controller/user_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -16,6 +17,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => NotesProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
         ),
       ],
       child: const MyApp(),
