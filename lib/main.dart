@@ -42,3 +42,27 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+
+
+///this is s sample code that with birthday in dartpad.dev
+
+// void main() {
+//   Future<void> waitFunc(int second, String msg) async {
+//     await Future.delayed(Duration(seconds: second));
+//     print(msg);
+//     return;
+//   }
+
+//   void wishBday() async {
+//     await waitFunc(2, "Today is Month D.");
+//     await waitFunc(3, "Do you know what's special??!!🤔");
+//     await waitFunc(2, "Yes, its NAME's B'DAY 🥳🎉");
+//     await waitFunc(1, "Wish him now");
+//     await waitFunc(2, "HAPPY B'DAY BRUH ❤️");
+//   }
+
+//   wishBday();
+// }
+
